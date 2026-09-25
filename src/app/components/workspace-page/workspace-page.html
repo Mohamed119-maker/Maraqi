@@ -1,0 +1,66 @@
+<section class="workspace-page" aria-labelledby="workspace-title">
+  @if (loading()) {
+    <div class="state-panel" role="status"><i class="pi pi-spin pi-spinner" aria-hidden="true"></i><strong>جاري تحميل البيانات...</strong><span>نجهز آخر المعلومات للعرض</span></div>
+  } @else if (error()) {
+    <div class="state-panel error-state" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i><strong>تعذر تحميل البيانات</strong><span>{{ error() }}</span></div>
+  } @else {
+  <header class="workspace-header">
+    <div class="title-lockup">
+      <div class="title-icon"><i [class]="section().icon" aria-hidden="true"></i></div>
+      <div><span class="eyebrow">إدارة مراقي</span><h1 id="workspace-title">{{ section().title }}</h1><p>{{ section().subtitle }}</p></div>
+    </div>
+    @if (section().key !== 'reports' && section().key !== 'issues' && section().key !== 'needs' && section().key !== 'settings') {<a class="primary-action" [routerLink]="section().key === 'engineers' ? '/engineers/new' : '/reports/new'"><i class="pi pi-plus" aria-hidden="true"></i>{{ section().action }}</a>}
+  </header>
+
+  <div class="workspace-summary">
+    @for (card of section().cards; track card.label) {
+      <article><span>{{ card.label }}</span><strong>{{ card.value }}</strong><small [class]="card.tone">{{ card.caption }}</small></article>
+    }
+  </div>
+
+  @if (section().key === 'settings') {
+    <section class="settings-panel">
+      <div class="settings-section-heading"><div><span class="eyebrow">إدارة النظام</span><h2>إجراءات سريعة</h2></div><span class="admin-badge"><i class="pi pi-shield"></i> صلاحيات Admin</span></div>
+      <div class="settings-actions">
+        <a class="settings-action-card" routerLink="/engineers/new"><span class="settings-action-icon"><i class="pi pi-user-plus" aria-hidden="true"></i></span><span><strong>إضافة مهندس</strong><small>إنشاء حساب مهندس وربطه بمشروع</small></span><i class="pi pi-arrow-left action-arrow" aria-hidden="true"></i></a>
+        <a class="settings-action-card" routerLink="/projects" [queryParams]="{ action: 'create' }"><span class="settings-action-icon"><i class="pi pi-building" aria-hidden="true"></i></span><span><strong>إضافة مشروع</strong><small>تسجيل مشروع وتحديد المهندس المسؤول</small></span><i class="pi pi-arrow-left action-arrow" aria-hidden="true"></i></a>
+      </div>
+    </section>
+
+    <section class="settings-panel permissions-panel">
+      <div class="settings-section-heading"><div><span class="eyebrow">حسب وثيقة المتطلبات</span><h2>صلاحيات الإدارة</h2></div><i class="pi pi-lock permission-lock" aria-hidden="true"></i></div>
+      <div class="permissions-grid">
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>إدارة المشاريع</strong><span>إضافة وتعديل وحذف المشاريع وتعيين المهندس المسؤول.</span></div></div>
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>إدارة المهندسين</strong><span>إضافة وتعديل المهندسين وربطهم بمشروع أو أكثر.</span></div></div>
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>اعتماد الاحتياجات</strong><span>تغيير حالة الطلب من معلّق إلى تم التوفير.</span></div></div>
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>القفل الرسمي للمشاكل</strong><span>توثيق حل المشكلة وإغلاقها نهائيًا من الإدارة فقط.</span></div></div>
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>التقارير والتحليلات</strong><span>عرض كل التقارير ومتابعة أداء المهندسين وتصدير النتائج.</span></div></div>
+        <div class="permission-item"><i class="pi pi-check-circle"></i><div><strong>الإشعارات والإعدادات</strong><span>استقبال إشعارات المواقع المعطلة وإدارة إعدادات النظام.</span></div></div>
+      </div>
+    </section>
+  } @else {
+  @if (section().chart) {
+    <section class="workspace-panel chart-panel">
+      <div class="panel-heading"><div><span class="eyebrow">آخر 7 أيام</span><h2>نسبة الالتزام بالتقارير</h2></div><strong class="chart-score">87%</strong></div>
+      <div class="line-chart" aria-label="رسم بياني لنسبة الالتزام"><span style="height: 34%"></span><span style="height: 48%"></span><span style="height: 66%"></span><span style="height: 61%"></span><span style="height: 79%"></span><span style="height: 72%"></span><span style="height: 88%"></span></div>
+      <div class="chart-labels"><span>السبت</span><span>الأحد</span><span>الإثنين</span><span>الثلاثاء</span><span>الأربعاء</span><span>الخميس</span><span>اليوم</span></div>
+    </section>
+  }
+
+  <section class="workspace-panel">
+    <div class="panel-heading"><div><span class="eyebrow">آخر التحديثات</span><h2>قائمة {{ section().title }}</h2></div><div class="panel-actions"><button class="filter-button" type="button"><i class="pi pi-filter" aria-hidden="true"></i> تصفية</button>@if (section().key === 'reports' || section().key === 'analytics') {<button class="filter-button" type="button" (click)="exportReports('excel')"><i class="pi pi-file-excel" aria-hidden="true"></i> Excel</button><button class="filter-button" type="button" (click)="exportReports('pdf')"><i class="pi pi-file-pdf" aria-hidden="true"></i> PDF</button>}</div></div>
+    @if (section().rows.length === 0) {
+      <div class="empty-state"><i class="pi pi-inbox" aria-hidden="true"></i><strong>لا توجد بيانات حاليًا</strong><span>ستظهر السجلات هنا عند توفرها.</span></div>
+    } @else {
+      <div class="workspace-table-wrap"><table><thead><tr><th>التقرير</th><th>المشروع / المهندس</th><th>الحالة</th><th>التحديث</th><th>إجراء</th></tr></thead><tbody>@for (row of section().rows; track row.title) {<tr><td><strong>{{ row.title }}</strong><small>{{ row.detail }}</small></td><td>{{ row.owner }}</td><td><span class="status" [class]="row.tone">{{ row.status }}</span></td><td>{{ timeAgo(row.updatedAt) }}</td><td class="row-actions">@if (section().key === 'projects') {<button class="row-action" type="button" (click)="requestProjectAssignment(row)">تكليف مهندس</button>} @if (row.actionRoute) {<a class="row-action" [routerLink]="row.actionRoute">{{ row.actionLabel }}</a>} @else if (section().key === 'issues' && row.status !== 'متحلة') {<button class="row-action" type="button" (click)="resolveIssue(row.id!)">تأكيد الحل</button>} @else if (section().key === 'needs' && row.status !== 'تم التوفير') {<button class="row-action" type="button" (click)="approveNeed(row.id!)">اعتماد التوفير</button>} @else if (section().key === 'engineers') {<button class="row-action delete-row-action" type="button" (click)="requestDeleteEngineer(row)">حذف المهندس</button>}</td></tr>}</tbody></table></div>
+    }
+  </section>
+  }
+  }
+</section>
+@if (pendingEngineerDelete(); as engineer) {
+  <div class="delete-modal-backdrop"><section class="delete-modal" role="dialog" aria-modal="true"><div class="delete-modal-icon"><i class="pi pi-trash"></i></div><h2>حذف حساب المهندس؟</h2><p>سيتم حذف حساب <strong>{{ engineer.title }}</strong> ولن يستطيع تسجيل الدخول بعد ذلك.</p><div class="delete-modal-actions"><button class="cancel-modal" type="button" (click)="cancelDeleteEngineer()">إلغاء</button><button class="confirm-delete" type="button" (click)="confirmDeleteEngineer()">حذف المهندس</button></div></section></div>
+}
+@if (pendingProjectAssignment(); as project) {
+  <div class="delete-modal-backdrop"><section class="delete-modal assignment-modal" role="dialog" aria-modal="true"><div class="delete-modal-icon assignment-icon"><i class="pi pi-user-plus"></i></div><h2>تكليف مهندس بالمشروع</h2><p>اختر المهندس المسؤول عن <strong>{{ project.title }}</strong>.</p><select class="assignment-select" [value]="assignmentEngineerId()" (change)="assignmentEngineerId.set($any($event.target).value)"><option value="">اختر المهندس</option>@for (engineer of availableEngineers(); track engineer.id) {<option [value]="engineer.id">{{ engineer.name }} - {{ engineer.phone }}</option>}</select><div class="delete-modal-actions"><button class="cancel-modal" type="button" (click)="cancelProjectAssignment()">إلغاء</button><button class="confirm-assignment" type="button" [disabled]="!assignmentEngineerId()" (click)="confirmProjectAssignment()">حفظ التكليف</button></div></section></div>
+}

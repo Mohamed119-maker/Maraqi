@@ -1,0 +1,6 @@
+@if (currentUser()) {
+	<app-navbar></app-navbar>
+}
+<main class="app-content" [class.auth-content]="!currentUser()">
+	<router-outlet></router-outlet>
+</main>

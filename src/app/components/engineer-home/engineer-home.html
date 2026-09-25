@@ -1,0 +1,77 @@
+<section class="engineer-page" dir="rtl">
+  @if (loading()) {
+    <div class="engineer-state"><i class="pi pi-spin pi-spinner"></i><strong>جاري تحميل مساحتك...</strong></div>
+  } @else if (error()) {
+    <div class="engineer-state error-state"><i class="pi pi-exclamation-circle"></i><strong>{{ error() }}</strong></div>
+  } @else {
+    <header class="engineer-header">
+      <div>
+        <span class="eyebrow">مساحة المهندس</span>
+        <h1>مرحبًا، {{ userName }}</h1>
+        <p>تابع مشاريعك وسجل تقرير الموقع اليومي من مكان واحد.</p>
+      </div>
+      <a class="primary-action" routerLink="/reports/new"><i class="pi pi-plus"></i> إضافة تقرير اليوم</a>
+    </header>
+
+    <div class="engineer-stats">
+      <article><i class="pi pi-building"></i><span>مشاريعي</span><strong>{{ projects().length }}</strong></article>
+      <article><i class="pi pi-file"></i><span>تقاريري</span><strong>{{ reports().length }}</strong></article>
+      <article><i class="pi pi-exclamation-triangle"></i><span>مشاكل مفتوحة</span><strong>{{ issues().length }}</strong></article>
+    </div>
+
+    <section class="engineer-panel received-notifications">
+      <div class="panel-heading"><div><span class="eyebrow">التحديثات الواردة</span><h2>الإشعارات المستلمة</h2></div><span class="notification-count">{{ notifications.unreadCount(userId, 'engineer') }}</span></div>
+      @if (notifications.notificationsFor(userId, 'engineer').length === 0) {
+        <p class="empty-state">لا توجد إشعارات جديدة من الإدارة.</p>
+      } @else {
+        <div class="received-notification-list">
+          @for (notification of notifications.notificationsFor(userId, 'engineer').slice(0, 6); track notification.id) {
+            <article class="received-notification" [class.unread-received]="!notification.isRead">
+              <i class="pi" [class.pi-check-circle]="notification.type === 'issue-resolved'" [class.pi-bell]="notification.type !== 'issue-resolved'"></i>
+              <div><strong>{{ notification.title }}</strong><p>{{ notification.message }}</p><small>{{ notification.createdAt | date: 'yyyy/MM/dd - HH:mm' }}</small></div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <div class="engineer-grid">
+      <section class="engineer-panel">
+        <div class="panel-heading"><div><span class="eyebrow">المشاريع المسندة</span><h2>مشاريعي</h2></div><i class="pi pi-building"></i></div>
+        @if (projects().length === 0) {
+          <p class="empty-state">لا توجد مشاريع مسندة إليك حاليًا.</p>
+        } @else {
+          <div class="project-list">
+            @for (project of projects(); track project.id) {
+              <article class="project-row">
+                <div><strong>{{ project.name }}</strong><small>{{ project.location }} · {{ project.phase }}</small></div>
+                <span class="status" [class]="project.status">{{ projectStatus(project.status) }}</span>
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="engineer-panel actions-panel">
+        <div class="panel-heading"><div><span class="eyebrow">الوصول السريع</span><h2>إجراءات اليوم</h2></div><i class="pi pi-compass"></i></div>
+        <a routerLink="/reports/new"><i class="pi pi-file-edit"></i><span><strong>تسجيل تقرير يومي</strong><small>أضف حالة الموقع والأعمال المنفذة</small></span><i class="pi pi-angle-left"></i></a>
+        <a routerLink="/engineer/issues/new"><i class="pi pi-exclamation-triangle"></i><span><strong>تسجيل مشكلة</strong><small>أبلغ الإدارة عن مشكلة في الموقع</small></span><i class="pi pi-angle-left"></i></a>
+        <a routerLink="/engineer/needs/new"><i class="pi pi-shopping-cart"></i><span><strong>إضافة احتياج</strong><small>أرسل طلب مواد أو متطلبات للموقع</small></span><i class="pi pi-angle-left"></i></a>
+        <a routerLink="/engineer/reports"><i class="pi pi-history"></i><span><strong>مراجعة تقاريري</strong><small>تابع المسودات والتقارير المرسلة</small></span><i class="pi pi-angle-left"></i></a>
+      </section>
+    </div>
+
+    <section class="engineer-panel reports-panel">
+      <div class="panel-heading"><div><span class="eyebrow">السجل الأخير</span><h2>تقاريري</h2></div><a class="panel-link" routerLink="/reports/new">تقرير جديد <i class="pi pi-plus"></i></a></div>
+      @if (reports().length === 0) {
+        <p class="empty-state">لم ترسل تقارير بعد.</p>
+      } @else {
+        <div class="project-list">
+          @for (report of reports(); track report.id) {
+            <article class="project-row"><div><strong>{{ report.reportDate }}</strong><small>{{ report.summary }}</small></div><span class="status" [class]="report.status">{{ report.status === 'submitted' ? 'مرسل' : report.status === 'late' ? 'مرسل متأخر' : 'مسودة' }}</span></article>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>

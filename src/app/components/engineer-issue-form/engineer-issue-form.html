@@ -1,0 +1,13 @@
+<section class="issue-page" dir="rtl">
+  <header class="issue-header"><div><span class="eyebrow">مساحة المهندس</span><h1>تسجيل مشكلة</h1><p>أرسل تفاصيل المشكلة إلى الإدارة لمتابعتها.</p></div><a routerLink="/engineer"><i class="pi pi-arrow-right"></i> العودة لمساحتي</a></header>
+  <form class="issue-form" [formGroup]="form" (ngSubmit)="submit()">
+    <label>المشروع<select formControlName="projectId"><option value="">اختر المشروع</option>@for (project of projects(); track project.id) {<option [value]="project.id">{{ project.name }}</option>}</select></label>
+    <label>نوع المشكلة<input formControlName="type" placeholder="مثال: توريد أو سلامة"></label>
+    <label>الأولوية<select formControlName="priority"><option value="medium">متوسطة</option><option value="high">عالية</option></select></label>
+    <label class="full-width">وصف المشكلة<textarea formControlName="description" rows="4" placeholder="اكتب وصفًا واضحًا للمشكلة"></textarea></label>
+    <label>تأثيرها على العمل<input formControlName="impact" placeholder="مثال: توقف جزء من الأعمال"></label>
+    <label>ما تحتاجه للحل<input formControlName="resolutionNeed" placeholder="الإجراء أو الاحتياج المطلوب"></label>
+    @if (error()) {<div class="form-error full-width">{{ error() }}</div>}
+    <button class="submit-button full-width" type="submit" [disabled]="saving()"><i class="pi pi-send"></i>{{ saving() ? 'جاري الإرسال...' : 'إرسال المشكلة' }}</button>
+  </form>
+</section>

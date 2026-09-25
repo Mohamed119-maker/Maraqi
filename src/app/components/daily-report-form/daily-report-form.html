@@ -1,0 +1,15 @@
+<section class="report-form-page" aria-labelledby="report-form-title">
+  <header class="form-header"><div><span class="eyebrow">التقارير اليومية</span><h1 id="report-form-title">تسجيل تقرير جديد</h1><p>وثّق حالة الموقع وأعمال اليوم قبل الإرسال.</p></div><a [routerLink]="reportsHome" class="back-link"><i class="pi pi-arrow-right"></i> العودة للتقارير</a></header>
+  @if (saved()) { <div class="form-message success" role="status"><i class="pi pi-check-circle"></i> تم حفظ التقرير بنجاح.</div> }
+  @if (error()) { <div class="form-message error" role="alert"><i class="pi pi-exclamation-circle"></i> {{ error() }}</div> }
+  <form class="report-form" [formGroup]="reportForm" (ngSubmit)="submit()" novalidate>
+    <div class="form-grid"><label>المشروع <select formControlName="projectId"><option value="">اختر المشروع</option>@for (project of projects(); track project.id) {<option [value]="project.id">{{ project.name }} - {{ project.location }}</option>}</select></label><label>تاريخ التقرير <input type="date" formControlName="reportDate"></label></div>
+    <fieldset><legend>حالة الموقع</legend><div class="status-options"><label><input type="radio" formControlName="siteStatus" value="normal"><span>طبيعي</span></label><label><input type="radio" formControlName="siteStatus" value="needs-follow-up"><span>يحتاج متابعة</span></label><label><input type="radio" formControlName="siteStatus" value="blocked"><span>معطل</span></label></div></fieldset>
+    <fieldset><legend>الأعمال المنفذة اليوم</legend><div class="work-checklist">@for (work of workOptions; track work) {<label><input type="checkbox" [checked]="reportForm.controls.completedWorks.value?.includes(work)" (change)="toggleWork(work)"><span>{{ work }}</span></label>}</div></fieldset>
+    <label>ملخص التقرير <textarea formControlName="summary" rows="4" placeholder="أضف ملخصًا مختصرًا عن حالة الموقع..."></textarea></label>
+    <label>صور الموقع <input type="file" accept="image/*" multiple (change)="onPhotosChange($event)"><small>يسمح بحد أقصى 5 صور.</small></label>
+    @if (photoNames().length) { <div class="photo-list">@for (photo of photoNames(); track photo) { <span><i class="pi pi-image"></i>{{ photo }}</span> }</div> }
+    @if (reviewing()) { <div class="review-box"><span class="eyebrow">مراجعة قبل الإرسال</span><strong>سيتم حفظ التقرير {{ isLate() ? 'كـتقرير متأخر' : 'كتقرير اليوم' }} ولا يمكن تعديله مباشرة بعد الإرسال.</strong><span>تأكد من حالة الموقع والملخص والصور قبل التأكيد.</span></div> }
+    <div class="form-actions"><button class="draft-button" type="button" (click)="saveDraft()" [disabled]="saving()"><i class="pi pi-save"></i> حفظ كمسودة</button><button class="submit-button" type="submit" [disabled]="saving()"><i class="pi" [class.pi-send]="!saving()" [class.pi-spin]="saving()" [class.pi-spinner]="saving()"></i>{{ saving() ? 'جارٍ الحفظ...' : (reviewing() ? 'تأكيد وإرسال التقرير' : 'مراجعة التقرير') }}</button>@if (reviewing()) { <button class="cancel-button" type="button" (click)="cancelReview()">تعديل البيانات</button> }</div>
+  </form>
+</section>

@@ -1,0 +1,62 @@
+<div class="sidebar-shell" dir="rtl" [class.sidebar-collapsed]="collapsed()" [class.sidebar-mobile-open]="isMobile() && open()">
+  <aside id="maraqi-sidebar" class="maraqi-sidebar-panel">
+    <header class="maraqi-sidebar-header">
+      <a class="maraqi-brand" routerLink="/">
+        <i class="pi pi-building" aria-hidden="true"></i>
+        <span>مراقي</span>
+      </a>
+      <button class="notification-button" type="button" aria-label="الإشعارات" (click)="notifications.markAllRead(currentUser()?.id, currentUser()?.role)"><i class="pi pi-bell" aria-hidden="true"></i>@if (unreadNotifications()) {<b>{{ unreadNotifications() }}</b>}</button>
+    </header>
+
+    <div class="maraqi-sidebar-content">
+      <nav aria-label="التنقل الرئيسي">
+        <ul class="maraqi-sidebar-menu">
+          @for (item of navItems(); track item.label) {
+            <li>
+              <a
+                class="maraqi-nav-link"
+                [routerLink]="item.route"
+                routerLinkActive="maraqi-nav-link-active"
+                [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+              >
+                <i [class]="item.icon" aria-hidden="true"></i>
+                <span>{{ item.label }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <footer class="maraqi-sidebar-footer">
+      <ul class="maraqi-sidebar-menu">
+        <li>
+          <button
+            class="maraqi-nav-link logout-button"
+            type="button"
+            aria-label="تسجيل الخروج"
+            (click)="logout()"
+          >
+            <i class="pi pi-sign-out" aria-hidden="true"></i>
+            <span>تسجيل خروج</span>
+          </button>
+        </li>
+      </ul>
+    </footer>
+  </aside>
+
+  @if (isMobile() && open()) {
+    <button class="mobile-sidebar-backdrop" type="button" aria-label="إغلاق القائمة" (click)="open.set(false)"></button>
+  }
+
+  <button
+    class="sidebar-toggle"
+    type="button"
+    [class.sidebar-toggle-open]="!collapsed()"
+    [attr.aria-expanded]="isMobile() ? open() : !collapsed()"
+    [attr.aria-label]="isMobile() ? (open() ? 'إغلاق القائمة' : 'فتح القائمة') : (collapsed() ? 'توسيع القائمة' : 'تصغير القائمة')"
+    (click)="toggleSidebar()"
+  >
+    <i [class]="isMobile() ? (open() ? 'pi pi-angle-right' : 'pi pi-angle-left') : (collapsed() ? 'pi pi-angle-left' : 'pi pi-angle-right')" aria-hidden="true"></i>
+  </button>
+</div>

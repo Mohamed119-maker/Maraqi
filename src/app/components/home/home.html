@@ -1,0 +1,38 @@
+<section class="dashboard" aria-labelledby="dashboard-title">
+	@if (loading()) {
+		<div class="dashboard-state" role="status"><i class="pi pi-spin pi-spinner" aria-hidden="true"></i><strong>جاري تحميل لوحة الإدارة...</strong></div>
+	} @else if (error()) {
+		<div class="dashboard-state dashboard-error" role="alert"><i class="pi pi-exclamation-circle" aria-hidden="true"></i><strong>{{ error() }}</strong></div>
+	} @else if (summary(); as dashboard) {
+	<header class="dashboard-header">
+		<div>
+			<span class="eyebrow">لوحة الإدارة</span>
+			<h1 id="dashboard-title">{{ greeting() }}، {{ userName() }}</h1>
+			<p>إليك ملخص حالة المشاريع والتقارير اليومية اليوم.</p>
+		</div>
+	</header>
+
+	<div class="stat-grid">
+		<article class="stat-card"><div class="stat-icon green"><i class="pi pi-building" aria-hidden="true"></i></div><div><span>المشاريع النشطة</span><strong>{{ dashboard.activeProjects }}</strong><small>من أصل {{ dashboard.totalProjects }} مشروع</small></div></article>
+		<article class="stat-card"><div class="stat-icon blue"><i class="pi pi-file" aria-hidden="true"></i></div><div><span>تقارير اليوم</span><strong>{{ dashboard.submittedReports }}</strong><small>من أصل {{ dashboard.totalReports }} تقرير</small></div></article>
+		<article class="stat-card"><div class="stat-icon amber"><i class="pi pi-clock" aria-hidden="true"></i></div><div><span>تقارير متأخرة</span><strong>{{ dashboard.lateReports }}</strong><small>تحتاج إلى متابعة</small></div></article>
+		<article class="stat-card"><div class="stat-icon red"><i class="pi pi-chart-line" aria-hidden="true"></i></div><div><span>نسبة الالتزام</span><strong>{{ dashboard.complianceRate }}%</strong><small>متوسط الشركة</small></div></article>
+	</div>
+
+	<section class="panel notifications-panel">
+		<div class="panel-heading"><div><span class="eyebrow">تنبيهات فورية</span><h2>آخر ما وصل من المواقع</h2></div><strong class="score">{{ unreadSiteNotificationCount() }}</strong></div>
+		@if (siteNotifications().length === 0) {
+			<p class="notifications-empty">لا توجد إشعارات جديدة.</p>
+		} @else {
+			<div class="notifications-list">@for (notification of siteNotifications().slice(0, 5); track notification.id) {<article class="notification-row"><a class="notification-main" [routerLink]="notification.relatedNeedId ? '/needs' : notification.relatedIssueId ? '/issues' : '/reports'"><i class="pi" [class.pi-exclamation-triangle]="notification.type === 'issue-created' || notification.type === 'blocked-site'" [class.pi-file]="notification.type === 'report-submitted'" [class.pi-shopping-cart]="notification.type === 'need-created'"></i><span><strong>{{ notification.title }}</strong><small>{{ notificationMessage(notification) }} · {{ timeAgo(notification.createdAt) }}</small></span><em [class.unread-notification]="!notification.isRead"></em></a>@if (notificationNeedsAction(notification)) {<a class="dashboard-row-action notification-action" [routerLink]="notificationActionRoute(notification)">{{ notificationActionLabel(notification) }}</a>}</article>}</div>
+		}
+	</section>
+
+	<div class="dashboard-grid">
+		<article class="panel status-panel"><div class="panel-heading"><div><span class="eyebrow">المشاريع النشطة</span><h2>حالة المواقع</h2></div><a routerLink="/projects">عرض الكل</a></div><div class="status-overview"><div class="donut"><strong>{{ projects().length }}</strong><span>مشروع</span></div><div class="legend"><span><i class="dot normal"></i>طبيعي <b>{{ projects().filter(project => project.status === 'normal').length }}</b></span><span><i class="dot watch"></i>يحتاج متابعة <b>{{ projects().filter(project => project.status === 'needs-follow-up').length }}</b></span><span><i class="dot blocked"></i>معطل <b>{{ projects().filter(project => project.status === 'blocked').length }}</b></span></div></div></article>
+		<article class="panel progress-panel"><div class="panel-heading"><div><span class="eyebrow">آخر 7 أيام</span><h2>الالتزام بالتقارير</h2></div><strong class="score">{{ dashboard.complianceRate }}%</strong></div><div class="bar-chart" aria-label="رسم بياني للالتزام الأسبوعي">@for (point of dashboard.weeklyCompliance; track point.label) {<span [style.height.%]="point.value"></span>}</div><div class="chart-labels">@for (point of dashboard.weeklyCompliance; track point.label) {<span>{{ point.label }}</span>}</div></article>
+	</div>
+
+	<section class="panel reports-panel"><div class="panel-heading"><div><span class="eyebrow">محدث منذ دقائق</span><h2>آخر التقارير</h2></div><a routerLink="/reports">كل التقارير</a></div><div class="table-wrap"><table><thead><tr><th>التقرير</th><th>المشروع</th><th>المهندس</th><th>حالة المشروع</th><th>تاريخ التقرير</th><th>إجراء</th></tr></thead><tbody>@for (report of reports(); track report.id) {<tr><td><strong>{{ report.summary || 'تقرير يومي' }}</strong><small>{{ report.reportDate }}</small></td><td>{{ projectName(report.projectId) }}</td><td>{{ reportEngineerName(report) }}</td><td><span class="status-pill" [class.normal-pill]="projectStatus(report.projectId) === 'طبيعي'" [class.watch-pill]="projectStatus(report.projectId) === 'يحتاج متابعة'" [class.blocked-pill]="projectStatus(report.projectId) === 'معطل'">{{ projectStatus(report.projectId) }}</span></td><td>{{ report.reportDate }}</td><td>@if (reportNeedsAction(report)) {<a class="dashboard-row-action" routerLink="/issues">{{ reportHasIssue(report) ? 'مراجعة المشكلة' : 'مراجعة المشروع' }}</a>}</td></tr>}</tbody></table></div></section>
+	}
+</section>

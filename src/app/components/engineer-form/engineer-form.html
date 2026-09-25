@@ -1,0 +1,12 @@
+<section class="engineer-form-page" dir="rtl">
+  <header class="form-header"><div><span class="eyebrow">إدارة المهندسين</span><h1>إضافة مهندس</h1><p>أنشئ حساب مهندس جديدًا ببيانات الدخول الأساسية.</p></div><a routerLink="/engineers"><i class="pi pi-arrow-right"></i> العودة للمهندسين</a></header>
+  <form class="engineer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label>صورة المهندس<input type="file" accept="image/*" (change)="onPhotoChange($event)"><small>{{ photoName() || 'اختر صورة شخصية' }}</small></label>
+    <label>اسم المهندس<input type="text" formControlName="name" placeholder="اكتب الاسم بالكامل"></label>
+    <label>رقم الموبايل<input type="tel" formControlName="phone" placeholder="01xxxxxxxxx"></label>
+    <label>كلمة المرور<input type="password" formControlName="password" placeholder="ستة أحرف على الأقل"></label>
+    <label>تكليف المشروع<select formControlName="projectId"><option value="">اختر المشروع</option>@for (project of projects(); track project.id) {<option [value]="project.id">{{ project.name }} - {{ project.location }}</option>}</select></label>
+    @if (error()) { <div class="form-error full-width" role="alert">{{ error() }}</div> }
+    <div class="form-actions full-width"><a class="cancel-action" routerLink="/engineers">إلغاء</a><button class="submit-action" type="submit" [disabled]="saving()"><i class="pi pi-user-plus"></i>{{ saving() ? 'جاري الحفظ...' : 'حفظ المهندس' }}</button></div>
+  </form>
+</section>

@@ -1,0 +1,28 @@
+<section class="reports-page" dir="rtl">
+  @if (loading()) {
+    <div class="reports-state"><i class="pi pi-spin pi-spinner"></i><strong>جاري تحميل تقاريرك...</strong></div>
+  } @else {
+    <header class="reports-header"><div><span class="eyebrow">مساحة المهندس</span><h1>تقاريري</h1><p>التقارير المرسلة للقراءة فقط، والمسودات قابلة للتعديل أو الإرسال أو الحذف.</p></div><a class="primary-action" routerLink="/reports/new"><i class="pi pi-plus"></i> تقرير جديد</a></header>
+    @if (error()) { <div class="reports-error" role="alert">{{ error() }}</div> }
+    @if (reports().length === 0) {
+      <div class="empty-panel"><i class="pi pi-inbox"></i><strong>لا توجد تقارير حتى الآن</strong><span>ابدأ بإضافة تقرير يومي.</span></div>
+    } @else {
+      <div class="reports-list">
+        @for (report of reports(); track report.id) {
+          <article class="report-card" [class.draft-card]="report.status === 'draft'">
+            <div class="report-main"><div class="report-icon"><i class="pi pi-file"></i></div><div><strong>{{ projectName(report.projectId) }}</strong><span>{{ report.reportDate }} · {{ report.summary || 'بدون ملخص' }}</span></div></div>
+            <span class="report-status" [class]="report.status">{{ report.status === 'draft' ? 'مسودة' : report.status === 'late' ? 'مرسل متأخر' : 'مرسل ومقفل' }}</span>
+            @if (report.status === 'draft') {
+              <div class="report-actions"><a [routerLink]="['/reports/new']" [queryParams]="{ draft: report.id }"><i class="pi pi-pencil"></i> تعديل</a><button type="button" (click)="sendDraft(report)"><i class="pi pi-send"></i> إرسال</button><button class="delete-action" type="button" (click)="requestDraftDelete(report)"><i class="pi pi-trash"></i> حذف</button></div>
+            } @else {
+              <span class="locked-note"><i class="pi pi-lock"></i> لا يمكن التعديل بعد الإرسال</span>
+            }
+          </article>
+        }
+      </div>
+    }
+  }
+</section>
+@if (pendingDraftDelete(); as report) {
+  <div class="delete-modal-backdrop"><section class="delete-modal" role="dialog" aria-modal="true" aria-labelledby="draft-delete-title"><div class="delete-modal-icon"><i class="pi pi-trash"></i></div><h2 id="draft-delete-title">حذف المسودة؟</h2><p>سيتم حذف التقرير المحفوظ كمسودة لمشروع <strong>{{ projectName(report.projectId) }}</strong> نهائيًا.</p><div class="delete-modal-actions"><button class="cancel-modal" type="button" [disabled]="deletingId() === report.id" (click)="cancelDraftDelete()">إلغاء</button><button class="confirm-delete" type="button" [disabled]="deletingId() === report.id" (click)="confirmDraftDelete()">{{ deletingId() === report.id ? 'جارٍ الحذف...' : 'حذف المسودة' }}</button></div></section></div>
+}

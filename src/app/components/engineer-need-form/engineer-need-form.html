@@ -1,0 +1,11 @@
+<section class="need-page" dir="rtl">
+  <header class="need-header"><div><span class="eyebrow">مساحة المهندس</span><h1>إضافة احتياج</h1><p>أرسل متطلبات موقعك إلى الإدارة للمراجعة والتوفير.</p></div><a routerLink="/engineer"><i class="pi pi-arrow-right"></i> العودة لمساحتي</a></header>
+  <form class="need-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label>المشروع<select formControlName="projectId"><option value="">اختر المشروع</option>@for (project of projects(); track project.id) {<option [value]="project.id">{{ project.name }} - {{ project.location }}</option>}</select></label>
+    <label>اسم الاحتياج<input type="text" formControlName="itemName" placeholder="مثال: حديد أو أسمنت"></label>
+    <label>الكمية<input type="number" min="1" formControlName="quantity"></label>
+    <label>الأولوية<select formControlName="priority"><option value="medium">متوسطة</option><option value="high">عالية</option></select></label>
+    @if (error()) {<div class="form-error full-width" role="alert">{{ error() }}</div>}
+    <div class="form-actions full-width"><a class="cancel-action" routerLink="/engineer">إلغاء</a><button class="submit-action" type="submit" [disabled]="saving()"><i class="pi pi-send"></i>{{ saving() ? 'جاري الإرسال...' : 'إرسال الاحتياج' }}</button></div>
+  </form>
+</section>
