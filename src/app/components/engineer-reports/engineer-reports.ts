@@ -27,15 +27,23 @@ export class EngineerReports implements OnInit {
 
   ngOnInit() {
     const engineerId = this.auth.getUser()?.id;
-    forkJoin({ projects: this.projectsService.getAll(), reports: this.reportsService.getAll() }).subscribe({
+    forkJoin({
+      projects: this.projectsService.getAll(),
+      reports: this.reportsService.getAll(),
+    }).subscribe({
       next: (data) => {
-        const assignedProjects = data.projects.filter((project) => project.engineerId === engineerId);
+        const assignedProjects = data.projects.filter(
+          (project) => project.engineerId === engineerId,
+        );
         const assignedProjectIds = new Set(assignedProjects.map((project) => project.id));
         this.projects.set(assignedProjects);
         this.reports.set(data.reports.filter((report) => assignedProjectIds.has(report.projectId)));
         this.loading.set(false);
       },
-      error: () => { this.error.set('تعذر تحميل التقارير'); this.loading.set(false); },
+      error: () => {
+        this.error.set('تعذر تحميل التقارير');
+        this.loading.set(false);
+      },
     });
   }
 
@@ -56,16 +64,33 @@ export class EngineerReports implements OnInit {
     if (!report || report.status !== 'draft' || this.deletingId()) return;
     this.deletingId.set(report.id);
     this.reportsService.delete(report.id).subscribe({
-      next: () => { this.reports.update((reports) => reports.filter((item) => item.id !== report.id)); this.pendingDraftDelete.set(null); this.deletingId.set(null); },
-      error: () => { this.error.set('تعذر حذف المسودة'); this.deletingId.set(null); },
+      next: () => {
+        this.reports.update((reports) => reports.filter((item) => item.id !== report.id));
+        this.pendingDraftDelete.set(null);
+        this.deletingId.set(null);
+      },
+      error: () => {
+        this.error.set('تعذر حذف المسودة');
+        this.deletingId.set(null);
+      },
     });
   }
 
   sendDraft(report: DailyReport) {
     if (report.status !== 'draft') return;
-    this.reportsService.update(report.id, { status: 'submitted', submittedAt: new Date().toISOString(), isLate: report.reportDate < new Date().toISOString().slice(0, 10), locked: true }).subscribe({
-      next: (updated) => this.reports.update((reports) => reports.map((item) => item.id === updated.id ? updated : item)),
-      error: () => this.error.set('تعذر إرسال المسودة'),
-    });
+    this.reportsService
+      .update(report.id, {
+        status: 'submitted',
+        submittedAt: new Date().toISOString(),
+        isLate: report.reportDate < new Date().toISOString().slice(0, 10),
+        locked: true,
+      })
+      .subscribe({
+        next: (updated) =>
+          this.reports.update((reports) =>
+            reports.map((item) => (item.id === updated.id ? updated : item)),
+          ),
+        error: () => this.error.set('تعذر إرسال المسودة'),
+      });
   }
 }

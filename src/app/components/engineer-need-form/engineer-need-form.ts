@@ -33,25 +33,43 @@ export class EngineerNeedForm implements OnInit {
 
   ngOnInit() {
     const engineerId = this.auth.getUser()?.id;
-    this.projectsService.getAll().subscribe((projects) => this.projects.set(projects.filter((project) => project.engineerId === engineerId && project.isActive)));
+    this.projectsService
+      .getAll()
+      .subscribe((projects) =>
+        this.projects.set(
+          projects.filter((project) => project.engineerId === engineerId && project.isActive),
+        ),
+      );
   }
 
   submit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     this.error.set(null);
     const value = this.form.getRawValue();
-    this.needs.create({
-      id: `need-${Date.now()}`,
-      projectId: value.projectId ?? '',
-      itemName: value.itemName ?? '',
-      quantity: Number(value.quantity ?? 1),
-      priority: value.priority as 'high' | 'medium',
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    }).subscribe({
-      next: (need) => { this.notifications.addNeedCreated(need.id, need.projectId); this.saving.set(false); this.router.navigateByUrl('/engineer'); },
-      error: (error: Error) => { this.saving.set(false); this.error.set(error.message || 'تعذر إرسال الاحتياج'); },
-    });
+    this.needs
+      .create({
+        id: `need-${Date.now()}`,
+        projectId: value.projectId ?? '',
+        itemName: value.itemName ?? '',
+        quantity: Number(value.quantity ?? 1),
+        priority: value.priority as 'high' | 'medium',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      })
+      .subscribe({
+        next: (need) => {
+          this.notifications.addNeedCreated(need.id, need.projectId);
+          this.saving.set(false);
+          this.router.navigateByUrl('/engineer');
+        },
+        error: (error: Error) => {
+          this.saving.set(false);
+          this.error.set(error.message || 'تعذر إرسال الاحتياج');
+        },
+      });
   }
 }

@@ -93,7 +93,11 @@ export class Home implements OnInit {
   }
 
   reportHasIssue(report: DailyReport): boolean {
-    return this.issues().some((issue) => (issue.reportId === report.id || issue.projectId === report.projectId) && issue.status !== 'resolved');
+    return this.issues().some(
+      (issue) =>
+        (issue.reportId === report.id || issue.projectId === report.projectId) &&
+        issue.status !== 'resolved',
+    );
   }
 
   reportNeedsAction(report: DailyReport): boolean {
@@ -101,10 +105,15 @@ export class Home implements OnInit {
   }
 
   siteNotifications() {
-    return this.notifications.notificationsFor(this.userId, 'admin').filter((notification) =>
-      notification.type !== 'issue-created' ||
-      !this.issues().some((issue) => issue.id === notification.relatedIssueId && issue.status === 'resolved'),
-    );
+    return this.notifications
+      .notificationsFor(this.userId, 'admin')
+      .filter(
+        (notification) =>
+          notification.type !== 'issue-created' ||
+          !this.issues().some(
+            (issue) => issue.id === notification.relatedIssueId && issue.status === 'resolved',
+          ),
+      );
   }
 
   unreadSiteNotificationCount(): number {
@@ -116,7 +125,9 @@ export class Home implements OnInit {
     const project = this.projects().find((item) => item.id === projectId);
     const report = this.reports().find((item) => item.id === notification.relatedReportId);
     const engineerId = project?.engineerId ?? report?.engineerId;
-    const message = projectId ? notification.message.replace(projectId, this.projectName(projectId)) : notification.message;
+    const message = projectId
+      ? notification.message.replace(projectId, this.projectName(projectId))
+      : notification.message;
     return engineerId ? `${message} · المهندس: ${this.engineerName(engineerId)}` : message;
   }
 
@@ -129,19 +140,25 @@ export class Home implements OnInit {
   notificationActionRoute(notification: MaraqiNotification): string {
     const issue = this.issues().find((item) => item.id === notification.relatedIssueId);
     const report = this.reports().find((item) => item.id === notification.relatedReportId);
-    return notification.type === 'issue-created' || issue?.status !== 'resolved' && !!issue || !!report && this.reportHasIssue(report)
+    return notification.type === 'issue-created' ||
+      (issue?.status !== 'resolved' && !!issue) ||
+      (!!report && this.reportHasIssue(report))
       ? '/issues'
       : '/projects';
   }
 
   notificationActionLabel(notification: MaraqiNotification): string {
-    return this.notificationActionRoute(notification) === '/issues' ? 'مراجعة المشكلة' : 'مراجعة المشروع';
+    return this.notificationActionRoute(notification) === '/issues'
+      ? 'مراجعة المشكلة'
+      : 'مراجعة المشروع';
   }
 
   private notificationProjectId(notification: MaraqiNotification): string | undefined {
-    return this.issues().find((item) => item.id === notification.relatedIssueId)?.projectId
-      ?? this.reports().find((item) => item.id === notification.relatedReportId)?.projectId
-      ?? this.needs().find((item) => item.id === notification.relatedNeedId)?.projectId;
+    return (
+      this.issues().find((item) => item.id === notification.relatedIssueId)?.projectId ??
+      this.reports().find((item) => item.id === notification.relatedReportId)?.projectId ??
+      this.needs().find((item) => item.id === notification.relatedNeedId)?.projectId
+    );
   }
 
   timeAgo(date?: string): string {

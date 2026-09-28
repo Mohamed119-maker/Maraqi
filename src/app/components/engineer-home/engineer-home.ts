@@ -44,7 +44,11 @@ export class EngineerHome implements OnInit {
         const assignedProjectIds = new Set(this.projects().map((project) => project.id));
         this.reports.set(data.reports.filter((report) => assignedProjectIds.has(report.projectId)));
         const projectIds = new Set(this.projects().map((project) => project.id));
-        this.issues.set(data.issues.filter((issue) => projectIds.has(issue.projectId) && issue.status !== 'resolved'));
+        this.issues.set(
+          data.issues.filter(
+            (issue) => projectIds.has(issue.projectId) && issue.status !== 'resolved',
+          ),
+        );
         this.loading.set(false);
       },
       error: () => {

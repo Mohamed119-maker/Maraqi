@@ -20,22 +20,30 @@ export class Navbar {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   readonly currentUser = this.auth.currentUser;
-  readonly navItems = computed<NavItem[]>(() => this.currentUser()?.role === 'engineer' ? [
-    { label: 'مساحتي', route: '/engineer', icon: 'pi pi-home', exact: true },
-    { label: 'تقرير جديد', route: '/reports/new', icon: 'pi pi-file-edit' },
-    { label: 'تقاريري', route: '/engineer/reports', icon: 'pi pi-history' },
-    { label: 'تسجيل مشكلة', route: '/engineer/issues/new', icon: 'pi pi-exclamation-triangle' },
-    { label: 'إضافة احتياج', route: '/engineer/needs/new', icon: 'pi pi-shopping-cart' },
-  ] : [
-    { label: 'الرئيسية', route: '/home', icon: 'pi pi-home', exact: true },
-    { label: 'المشاريع', route: '/projects', icon: 'pi pi-building' },
-    { label: 'التقارير', route: '/reports', icon: 'pi pi-file' },
-    { label: 'المشاكل', route: '/issues', icon: 'pi pi-exclamation-triangle' },
-    { label: 'الاحتياجات', route: '/needs', icon: 'pi pi-shopping-cart' },
-    { label: 'المهندسون', route: '/engineers', icon: 'pi pi-users' },
-    { label: 'التقارير التحليلية', route: '/analytics', icon: 'pi pi-chart-bar' },
-    { label: 'الإعدادات', route: '/settings', icon: 'pi pi-cog' },
-  ]);
+  readonly navItems = computed<NavItem[]>(() =>
+    this.currentUser()?.role === 'engineer'
+      ? [
+          { label: 'مساحتي', route: '/engineer', icon: 'pi pi-home', exact: true },
+          { label: 'تقرير جديد', route: '/reports/new', icon: 'pi pi-file-edit' },
+          { label: 'تقاريري', route: '/engineer/reports', icon: 'pi pi-history' },
+          {
+            label: 'تسجيل مشكلة',
+            route: '/engineer/issues/new',
+            icon: 'pi pi-exclamation-triangle',
+          },
+          { label: 'إضافة احتياج', route: '/engineer/needs/new', icon: 'pi pi-shopping-cart' },
+        ]
+      : [
+          { label: 'الرئيسية', route: '/home', icon: 'pi pi-home', exact: true },
+          { label: 'المشاريع', route: '/projects', icon: 'pi pi-building' },
+          { label: 'التقارير', route: '/reports', icon: 'pi pi-file' },
+          { label: 'المشاكل', route: '/issues', icon: 'pi pi-exclamation-triangle' },
+          { label: 'الاحتياجات', route: '/needs', icon: 'pi pi-shopping-cart' },
+          { label: 'المهندسون', route: '/engineers', icon: 'pi pi-users' },
+          { label: 'التقارير التحليلية', route: '/analytics', icon: 'pi pi-chart-bar' },
+          { label: 'الإعدادات', route: '/settings', icon: 'pi pi-cog' },
+        ],
+  );
 
   ngOnInit() {
     if (typeof window === 'undefined') return;

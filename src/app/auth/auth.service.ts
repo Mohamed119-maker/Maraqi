@@ -16,12 +16,31 @@ export class AuthService {
   private readonly engineers = inject(EngineersService);
 
   login(phone: string, password: string, rememberMe = false): Observable<AuthUser> {
-    if (phone === this.adminPhone && password === this.adminPassword) return this.completeLogin({ id: 'demo-admin', name: 'مدير مراقي', phone, role: 'admin', token: 'demo-jwt-token' }, rememberMe);
-    return this.engineers.getAll().pipe(switchMap((engineers) => {
-      const availableEngineers = [...engineers, ...this.readStoredEngineers()];
-      const engineer = availableEngineers.find((item) => item.phone === phone && item.password === password);
-      return engineer ? this.completeLogin({ id: engineer.id, name: engineer.name, phone: engineer.phone, role: 'engineer', token: 'demo-jwt-token' }, rememberMe) : throwError(() => new Error('بيانات الدخول غير صحيحة'));
-    }));
+    if (phone === this.adminPhone && password === this.adminPassword)
+      return this.completeLogin(
+        { id: 'demo-admin', name: 'مدير مراقي', phone, role: 'admin', token: 'demo-jwt-token' },
+        rememberMe,
+      );
+    return this.engineers.getAll().pipe(
+      switchMap((engineers) => {
+        const availableEngineers = [...engineers, ...this.readStoredEngineers()];
+        const engineer = availableEngineers.find(
+          (item) => item.phone === phone && item.password === password,
+        );
+        return engineer
+          ? this.completeLogin(
+              {
+                id: engineer.id,
+                name: engineer.name,
+                phone: engineer.phone,
+                role: 'engineer',
+                token: 'demo-jwt-token',
+              },
+              rememberMe,
+            )
+          : throwError(() => new Error('بيانات الدخول غير صحيحة'));
+      }),
+    );
   }
 
   forgotPassword(phone: string): Observable<{ message: string }> {
@@ -52,9 +71,17 @@ export class AuthService {
 
   private readUser(): AuthUser | null {
     if (typeof localStorage === 'undefined') return null;
-    const storedUser = localStorage.getItem(this.storageKey) ?? (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(this.sessionStorageKey) : null);
+    const storedUser =
+      localStorage.getItem(this.storageKey) ??
+      (typeof sessionStorage !== 'undefined'
+        ? sessionStorage.getItem(this.sessionStorageKey)
+        : null);
     if (!storedUser) return null;
-    try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
+    try {
+      return JSON.parse(storedUser) as AuthUser;
+    } catch {
+      return null;
+    }
   }
 
   private persistUser(user: AuthUser): void {
@@ -64,7 +91,8 @@ export class AuthService {
   private completeLogin(user: AuthUser, rememberMe: boolean): Observable<AuthUser> {
     this.userState.set(user);
     if (rememberMe) this.persistUser(user);
-    else if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(user));
+    else if (typeof sessionStorage !== 'undefined')
+      sessionStorage.setItem(this.sessionStorageKey, JSON.stringify(user));
     return of(user).pipe(delay(300));
   }
 
@@ -76,6 +104,10 @@ export class AuthService {
 
   private readStoredEngineers(): Engineer[] {
     if (typeof localStorage === 'undefined') return [];
-    try { return JSON.parse(localStorage.getItem(this.engineersStorageKey) ?? '[]') as Engineer[]; } catch { return []; }
+    try {
+      return JSON.parse(localStorage.getItem(this.engineersStorageKey) ?? '[]') as Engineer[];
+    } catch {
+      return [];
+    }
   }
 }

@@ -7,12 +7,23 @@ import { Issue } from '../interfaces/issue';
 import { Need } from '../interfaces/need';
 import { Project } from '../interfaces/project';
 import { CrudDataSource, MaraqiDataProvider } from './data-provider';
-import { mockAnalytics, mockEngineers, mockIssues, mockNeeds, mockProjects, mockReports } from './mock-data';
+import {
+  mockAnalytics,
+  mockEngineers,
+  mockIssues,
+  mockNeeds,
+  mockProjects,
+  mockReports,
+} from './mock-data';
 
 class MockCollection<T extends { id: string }> implements CrudDataSource<T> {
   private failNextRequest = false;
 
-  constructor(protected records: T[], private readonly latency = 300, private readonly storageKey?: string) {
+  constructor(
+    protected records: T[],
+    private readonly latency = 300,
+    private readonly storageKey?: string,
+  ) {
     this.records = this.readRecords(records);
   }
 
@@ -36,7 +47,7 @@ class MockCollection<T extends { id: string }> implements CrudDataSource<T> {
     const index = this.records.findIndex((item) => item.id === id);
     if (index < 0) return this.respondError(`العنصر ${id} غير موجود`);
     const record = { ...this.records[index], ...payload, id } as T;
-    this.records = this.records.map((item, itemIndex) => itemIndex === index ? record : item);
+    this.records = this.records.map((item, itemIndex) => (itemIndex === index ? record : item));
     this.persistRecords();
     return this.respond({ ...record });
   }
@@ -68,7 +79,7 @@ class MockCollection<T extends { id: string }> implements CrudDataSource<T> {
     if (!this.storageKey || typeof localStorage === 'undefined') return fallback;
     try {
       const stored = localStorage.getItem(this.storageKey);
-      return stored ? JSON.parse(stored) as T[] : fallback;
+      return stored ? (JSON.parse(stored) as T[]) : fallback;
     } catch {
       return fallback;
     }
@@ -82,8 +93,15 @@ class MockCollection<T extends { id: string }> implements CrudDataSource<T> {
 
 class MockReportCollection extends MockCollection<DailyReport> {
   override create(payload: Partial<DailyReport>): Observable<DailyReport> {
-    const duplicate = this.records.some((report) => report.projectId === payload.projectId && report.reportDate === payload.reportDate && report.status !== 'draft');
-    return duplicate ? this.respondError('يوجد تقرير مرسل لهذا المشروع في نفس التاريخ') : super.create(payload);
+    const duplicate = this.records.some(
+      (report) =>
+        report.projectId === payload.projectId &&
+        report.reportDate === payload.reportDate &&
+        report.status !== 'draft',
+    );
+    return duplicate
+      ? this.respondError('يوجد تقرير مرسل لهذا المشروع في نفس التاريخ')
+      : super.create(payload);
   }
 }
 
@@ -96,6 +114,9 @@ export class MockDataProvider implements MaraqiDataProvider {
   engineers = new MockCollection<Engineer>([...mockEngineers], 300, 'maraqi-engineers');
 
   analytics = {
-    getSummary: () => of({ ...mockAnalytics, weeklyCompliance: [...mockAnalytics.weeklyCompliance] }).pipe(delay(300)),
+    getSummary: () =>
+      of({ ...mockAnalytics, weeklyCompliance: [...mockAnalytics.weeklyCompliance] }).pipe(
+        delay(300),
+      ),
   };
 }

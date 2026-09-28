@@ -10,13 +10,26 @@ import { environment } from '../../environments/environment';
 import { CrudDataSource, MaraqiDataProvider } from './data-provider';
 
 class HttpCollection<T> implements CrudDataSource<T> {
-  constructor(private readonly http: HttpClient, private readonly endpoint: string) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly endpoint: string,
+  ) {}
 
-  getAll() { return this.http.get<T[]>(this.endpoint); }
-  getById(id: string) { return this.http.get<T>(`${this.endpoint}/${id}`); }
-  create(payload: Partial<T>) { return this.http.post<T>(this.endpoint, payload); }
-  update(id: string, payload: Partial<T>) { return this.http.put<T>(`${this.endpoint}/${id}`, payload); }
-  delete(id: string) { return this.http.delete<void>(`${this.endpoint}/${id}`); }
+  getAll() {
+    return this.http.get<T[]>(this.endpoint);
+  }
+  getById(id: string) {
+    return this.http.get<T>(`${this.endpoint}/${id}`);
+  }
+  create(payload: Partial<T>) {
+    return this.http.post<T>(this.endpoint, payload);
+  }
+  update(id: string, payload: Partial<T>) {
+    return this.http.put<T>(`${this.endpoint}/${id}`, payload);
+  }
+  delete(id: string) {
+    return this.http.delete<void>(`${this.endpoint}/${id}`);
+  }
 }
 
 @Injectable({ providedIn: 'root' })
@@ -29,5 +42,7 @@ export class HttpDataProvider implements MaraqiDataProvider {
   issues = new HttpCollection<Issue>(this.http, `${this.apiBaseUrl}/issues`);
   needs = new HttpCollection<Need>(this.http, `${this.apiBaseUrl}/needs`);
   engineers = new HttpCollection<Engineer>(this.http, `${this.apiBaseUrl}/engineers`);
-  analytics = { getSummary: () => this.http.get<AnalyticsSummary>(`${this.apiBaseUrl}/analytics/summary`) };
+  analytics = {
+    getSummary: () => this.http.get<AnalyticsSummary>(`${this.apiBaseUrl}/analytics/summary`),
+  };
 }

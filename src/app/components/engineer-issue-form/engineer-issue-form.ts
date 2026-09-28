@@ -35,28 +35,46 @@ export class EngineerIssueForm implements OnInit {
 
   ngOnInit() {
     const engineerId = this.auth.getUser()?.id;
-    this.projectsService.getAll().subscribe((projects) => this.projects.set(projects.filter((project) => project.engineerId === engineerId && project.isActive)));
+    this.projectsService
+      .getAll()
+      .subscribe((projects) =>
+        this.projects.set(
+          projects.filter((project) => project.engineerId === engineerId && project.isActive),
+        ),
+      );
   }
 
   submit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     this.error.set(null);
     const value = this.form.getRawValue();
-    this.issues.create({
-      id: `issue-${Date.now()}`,
-      projectId: value.projectId ?? '',
-      reportId: '',
-      type: value.type ?? '',
-      description: value.description ?? '',
-      impact: value.impact ?? '',
-      resolutionNeed: value.resolutionNeed ?? '',
-      status: 'open',
-      priority: value.priority as 'high' | 'medium',
-      createdAt: new Date().toISOString(),
-    }).subscribe({
-      next: (issue) => { this.notifications.addIssueCreated(issue.id, issue.projectId); this.saving.set(false); this.router.navigateByUrl('/engineer'); },
-      error: () => { this.saving.set(false); this.error.set('تعذر تسجيل المشكلة'); },
-    });
+    this.issues
+      .create({
+        id: `issue-${Date.now()}`,
+        projectId: value.projectId ?? '',
+        reportId: '',
+        type: value.type ?? '',
+        description: value.description ?? '',
+        impact: value.impact ?? '',
+        resolutionNeed: value.resolutionNeed ?? '',
+        status: 'open',
+        priority: value.priority as 'high' | 'medium',
+        createdAt: new Date().toISOString(),
+      })
+      .subscribe({
+        next: (issue) => {
+          this.notifications.addIssueCreated(issue.id, issue.projectId);
+          this.saving.set(false);
+          this.router.navigateByUrl('/engineer');
+        },
+        error: () => {
+          this.saving.set(false);
+          this.error.set('تعذر تسجيل المشكلة');
+        },
+      });
   }
 }

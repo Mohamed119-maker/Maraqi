@@ -2,7 +2,13 @@ import { UserRole } from './auth-user';
 
 export interface MaraqiNotification {
   id: string;
-  type: 'blocked-site' | 'report-submitted' | 'issue-created' | 'issue-resolved' | 'need-created' | 'system';
+  type:
+    | 'blocked-site'
+    | 'report-submitted'
+    | 'issue-created'
+    | 'issue-resolved'
+    | 'need-created'
+    | 'system';
   title: string;
   message: string;
   relatedReportId?: string;

@@ -31,7 +31,9 @@ export class EngineerForm {
   });
 
   constructor() {
-    this.projectsService.getAll().subscribe((projects) => this.projects.set(projects.filter((project) => project.isActive)));
+    this.projectsService
+      .getAll()
+      .subscribe((projects) => this.projects.set(projects.filter((project) => project.isActive)));
   }
 
   onPhotoChange(event: Event) {
@@ -40,7 +42,10 @@ export class EngineerForm {
   }
 
   submit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     this.error.set(null);
     const value = this.form.getRawValue();
@@ -54,8 +59,14 @@ export class EngineerForm {
       isActive: true,
     };
     this.engineers.create(engineer).subscribe({
-      next: (created) => { this.auth.persistEngineer(created); this.router.navigateByUrl('/engineers'); },
-      error: (error: Error) => { this.saving.set(false); this.error.set(error.message || 'تعذر إضافة المهندس'); },
+      next: (created) => {
+        this.auth.persistEngineer(created);
+        this.router.navigateByUrl('/engineers');
+      },
+      error: (error: Error) => {
+        this.saving.set(false);
+        this.error.set(error.message || 'تعذر إضافة المهندس');
+      },
     });
   }
 }

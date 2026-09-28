@@ -1,13 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 html,
 body {
-	margin: 0;
-	min-width: 320px;
-	overflow-x: hidden;
-	background: #f5f8f6;
-	color: #18332a;
-	font-family: Tahoma, Arial, sans-serif;
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  background: #f5f8f6;
+  color: #18332a;
+  font-family: Tahoma, Arial, sans-serif;
 }
 
 button,
@@ -15,6 +15,6 @@ a,
 *,
 *::before,
 *::after {
-	font: inherit;
-	box-sizing: border-box;
+  font: inherit;
+  box-sizing: border-box;
 }

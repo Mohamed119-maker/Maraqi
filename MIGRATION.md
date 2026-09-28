@@ -7,13 +7,13 @@
 في `src/environments/environment.ts` غيّر:
 
 ```ts
-useMockData: true
+useMockData: true;
 ```
 
 إلى:
 
 ```ts
-useMockData: false
+useMockData: false;
 ```
 
 ثم حدّث `apiBaseUrl` إلى عنوان الـAPI الحقيقي. لا تحتاج مكونات Angular أو القوالب إلى تغيير.
