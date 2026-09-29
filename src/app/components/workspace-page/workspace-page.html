@@ -210,7 +210,7 @@
                         <a class="row-action" [routerLink]="row.actionRoute">{{
                           row.actionLabel
                         }}</a>
-                      } @else if (section().key === 'issues' && row.status !== 'متحلة') {
+                      } @else if (section().key === 'issues' && row.status !== 'معالجه') {
                         <button class="row-action" type="button" (click)="resolveIssue(row.id!)">
                           تأكيد الحل
                         </button>

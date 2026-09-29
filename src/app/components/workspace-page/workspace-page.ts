@@ -81,7 +81,7 @@ export class WorkspacePage implements OnInit {
           this.section.update((section) => ({
             ...section,
             rows: section.rows.map((row) =>
-              row.id === id ? { ...row, status: 'متحلة', tone: 'green' } : row,
+              row.id === id ? { ...row, status: 'معالجه', tone: 'green' } : row,
             ),
           }));
         });
@@ -302,7 +302,7 @@ export class WorkspacePage implements OnInit {
               issue.status === 'open'
                 ? 'مفتوحة'
                 : issue.status === 'resolved'
-                  ? 'متحلة'
+                  ? 'معالجه'
                   : 'قيد المتابعة',
             tone:
               issue.status === 'resolved' ? 'green' : issue.priority === 'high' ? 'red' : 'amber',
@@ -465,7 +465,7 @@ export class WorkspacePage implements OnInit {
       detail: `${project?.name ?? 'مشروع غير معروف'} - ${issue.description}`,
       owner: issue.priority === 'high' ? 'أولوية عالية' : 'أولوية متوسطة',
       status:
-        issue.status === 'open' ? 'مفتوحة' : issue.status === 'resolved' ? 'متحلة' : 'قيد المتابعة',
+        issue.status === 'open' ? 'مفتوحة' : issue.status === 'resolved' ? 'معالجه' : 'قيد المتابعة',
       tone: issue.status === 'resolved' ? 'green' : issue.priority === 'high' ? 'red' : 'amber',
       updatedAt: issue.createdAt,
     };
